@@ -6,7 +6,7 @@ An asynchronous Promise implementation in Lua, inspired by JavaScript Promises. 
 
 - Simple creation and handling of asynchronous tasks
 - `:done()` method with support for `onResolve` and `onReject`
-- `:next()` / `:andThen()` for chaining
+- `:next()` `onResolve`
 - `:catch()` for error handling
 - `:finally()` for final actions
 - `promise.all()` for running multiple promises in parallel
@@ -27,30 +27,13 @@ local promise = include("promise.lua")
 
 ```lua
 local p = promise.new(function(resolve, reject)
-    timer.Simple(1, function()
-        resolve("Success!")
-    end)
+    resolve("Success!")
 end)
 
 p:done(function(result)
     print("Resolved with:", result)
 end, function(err)
     print("Rejected with:", err)
-end)
-```
-
-### Chaining with `:next()` / `:andThen()` and error handling with `:catch()`
-
-```lua
-promise.new(function(resolve)
-    resolve(5)
-end):next(function(value)
-    print("First value:", value)
-    return value + 10
-end):next(function(value)
-    print("Second value:", value)
-end):catch(function(err)
-    print("Error:", err)
 end)
 ```
 
@@ -80,26 +63,6 @@ promise.chain({
 end)
 ```
 
-### `promise.retry()`
-
-```lua
-local attempts = 0
-promise.retry(function()
-    return promise.new(function(resolve, reject)
-        attempts = attempts + 1
-        if attempts < 3 then
-            reject("Try again")
-        else
-            resolve("Success on attempt " .. attempts)
-        end
-    end)
-end, 5):done(function(result)
-    print(result)
-end):catch(function(err)
-    print("Failed:", err)
-end)
-```
-
 ## 🧪 Methods
 
 | Method                        | Description |
@@ -111,12 +74,7 @@ end)
 | `:finally(fn)`               | Run regardless of result |
 | `promise.all(list)`          | Wait for all promises |
 | `promise.chain(list)`        | Execute promises sequentially |
-| `promise.retry(fn, attempts)`| Retry function N times |
 
 ## 📄 License
 
 MIT — free to use, modify, and distribute. Please include attribution if redistributing or modifying.
-
----
-
-Happy async coding!
