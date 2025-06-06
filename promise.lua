@@ -131,32 +131,6 @@ do
 end
 
 do
-	---@param func fun(): promise
-	---@param attempts number
-	---@return promise
-	function promise.retry(func, attempts)
-		attempts = attempts or 3
-		local p = promise.new()
-
-		local function try(attempt)
-			func():done(function(...)
-				p:resolve(...)
-			end):catch(function(err)
-				if attempt < attempts then
-					try(attempt + 1)
-				else
-					p:reject(err)
-				end
-			end)
-		end
-
-		try(1)
-
-		return p
-	end
-end
-
-do
 	---@param list fun(): promise[]
 	---@return promise
 	function promise.chain(list)
